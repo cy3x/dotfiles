@@ -1,0 +1,10 @@
+#!/bin/bash
+
+for i in "$@"; do
+    case $i in
+        *movi*) curl -s $i | xmllint --html --xpath '//h3/a[@episode_id]/text()' -;;
+        *imdb*) curl -s $i | xmllint --html --xpath '//a[@itemprop="name"]/text()' -;;
+        *wiki*) w3m -dump -cols 900 $i | grep -o '"[^"]*"' | cut -d \" -f 2;;
+        *lost*) torify curl -s $i | xmllint --html --xpath '//td[@class="gamma"]/div/span/text()' - | tac;;
+    esac | nl
+done 2>&-

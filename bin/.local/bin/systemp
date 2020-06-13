@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "CPU: $(sensors | awk '/°C/ { print substr($4, 2, 2); exit }')°C"
+echo "GPU: $(nvidia-settings -tq gpucoretemp | sed 1q)°C"
+hddtemp /dev/sd[a-z] 2>&-

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+IFS=  read file icon tl artist album title < <(
+MUSIC_FORMAT='$file $icon $tl $artist $album $title' music)
+
+[[ $file ]] || exit
+[[ $file == ${file//\/} ]] &&
+file=~/Music/$file
+
+title="$icon $title (-$tl)"
+pics=("${file%/*}/"*.jpg)
+cover=~/.cache/music-notify.png
+
+[[ $album ]] &&
+artist+=" ($album)"
+
+[[ ! $artist ]] &&
+artist=$title title=
+
+rm $cover
+ffmpeg -i "$file" $cover 2>&- || cp "$pics" $cover
+convert $cover -thumbnail '100x>^' $cover ||
+cover=audio-x-generic
+
+notify-send -a music-notify -i $cover -- "$artist" "$title"

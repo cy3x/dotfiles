@@ -1,0 +1,12 @@
+#!/bin/bash
+
+[[ ! $@ ]] &&
+for i in /dev/sd?; do
+    echo "* $i"
+    vboxmanage internalcommands listpartitions -rawdisk $i | sed 's/^/  /'
+    echo
+done 2>&-
+
+for i in "$@"; do
+    vboxmanage internalcommands createrawvmdk -rawdisk $i -filename ${i##*/}.vmdk
+done

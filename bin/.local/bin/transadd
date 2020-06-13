@@ -1,0 +1,4 @@
+#!/bin/sh
+# Add torrent to transmission-daemon
+
+transmission-remote -a "$@" && notify-send "Torrent added"

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cd ${PASSWORD_STORE_DIR:-~/.password-store} || exit
+
+s=$(find * -type f | sed 's/\.gpg//' | menu -i pass -c 10 -l 6)
+[[ $s ]] && pass $s | menu -i pass -p $s | xsel -bt 10000

@@ -1,0 +1,42 @@
+set font "Terminus 11"
+set selection-clipboard clipboard
+set incremental-search
+set scroll-step 100
+
+map f toggle_fullscreen
+map [fullscreen] f toggle_fullscreen
+map u navigate previous
+map [fullscreen] u navigate previous
+map d navigate next
+map [fullscreen] d navigate next
+map g goto top
+map [fullscreen] g goto top
+map D toggle_page_mode
+map [fullscreen] D toggle_page_mode
+map r reload
+map [fullscreen] r reload
+map R rotate
+map [fullscreen] R rotate
+map K zoom in
+map [fullscreen] K zoom in
+map J zoom out
+map [fullscreen] J zoom out
+map i recolor
+map [fullscreen] i recolor
+map p print
+map [fullscreen] p print
+
+set default-bg              "#1b202a"
+set default-fg              "#9aa4bd"
+set completion-bg           "#1b202a"
+set completion-fg           "#9aa4bd"
+set completion-group-bg     "#1b202a"
+set completion-group-fg     "#9aa4bd"
+set completion-highlight-bg "#9aa4bd"
+set completion-highlight-fg "#1b202a"
+set inputbar-bg             "#1b202a"
+set inputbar-fg             "#9aa4bd"
+set statusbar-bg            "#9aa4bd"
+set statusbar-fg            "#1b202a"
+
+# vim: ft=conf

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+{ echo "$(xsel)"; tac ~/.config/mpv/history.log; } |
+menu -i kino | sed "s|~|$HOME|; s/%) - /\t/" | cut -f 2 |
+tr \\n \\0 | xargs -r0 mpv --profile=pseudo-gui &

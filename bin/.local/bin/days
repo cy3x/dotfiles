@@ -1,0 +1,9 @@
+#!/bin/bash
+
+test -f ~/Wiki/Дни.wiki && sort  $_ | tr \| \\t |
+awk 'int($1) >= int(strftime("%d")) && index($2, strftime("%b")) {
+    if (int($1) == int(strftime("%d")))
+        print $0, "🎂"
+    else
+        print $0
+}' | column -te

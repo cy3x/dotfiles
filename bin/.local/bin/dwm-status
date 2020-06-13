@@ -1,0 +1,114 @@
+//usr/bin/cc -xc $0 -lX11 -o$0~ && exec $0~
+
+#include <stdio.h>
+#include <unistd.h>
+#include <time.h>
+#include <wordexp.h>
+#include <X11/XKBlib.h>
+
+size_t readfile(const char *path){ // {{{
+    size_t result = 0;
+
+    wordexp_t p;
+    wordexp(path, &p, 0);
+
+    for (int i = 0; i < p.we_wordc; i++){
+        FILE *fp;
+        size_t data;
+
+        if ((fp = fopen(p.we_wordv[i], "r")) == NULL)
+            continue;
+
+        fscanf(fp, "%zu", &data);
+        fclose(fp);
+
+        result += data;
+    }
+
+    wordfree(&p);
+    return result;
+} // }}}
+void network(char *dl, char *up){ // {{{
+    static size_t rxn = 0, txn = 0;
+    size_t rxw = rxn, txw = txn;
+
+    sprintf(dl, "0 KB");
+    sprintf(up, "0 KB");
+
+    rxn = readfile("/sys/class/net/*/statistics/rx_bytes");
+    txn = readfile("/sys/class/net/*/statistics/tx_bytes");
+
+    if (!rxw || !txw)
+        return;
+
+    int i, j;
+    size_t rxd = (rxn - rxw);
+    size_t txd = (txn - txw);
+    const char* map[] = {"B", "KB", "MB"};
+
+    for (i = 0; rxd >= 1024; i++, rxd /= 1024);
+    for (j = 0; txd >= 1024; j++, txd /= 1024);
+
+    if (i > 0) sprintf(dl, "%zu %s", rxd, map[i]);
+    if (j > 0) sprintf(up, "%zu %s", txd, map[j]);
+} // }}}
+void volumebar(char *buf, int len){ // {{{
+    size_t pos = (len * readfile( "~/.cache/volume") / 100);
+
+    if (pos > len)
+        return;
+
+    int i;
+    char bar[100] = "";
+
+    for (i = 0; i < len; i++)
+        bar[i] = (i < pos ? '=' : '-');
+
+    bar[i] = '-';
+    bar[pos] = '|';
+
+    sprintf(buf, "%s", bar);
+} // }}}
+
+int main(int argc, char **argv){
+    Display *dpy = XOpenDisplay(NULL);
+
+    char status[1000] = "";
+
+    XkbStateRec state;
+    char vol[100] = "";
+    char wet[100] = "";
+
+    time_t tm;
+    char date[100] = "";
+
+    char net_dl[100] = "";
+    char net_up[100] = "";
+
+    for (int timer = 0;; timer++){
+        volumebar(vol, 20);
+        XkbGetState(dpy, XkbUseCoreKbd, &state);
+
+        if (timer % 10 == 0){
+            tm = time(NULL);
+            strftime(date, sizeof(date), "%T", localtime(&tm));
+
+            network(net_dl, net_up);
+            sprintf(wet, "%zu°C", readfile("~/.cache/weather"));
+        }
+
+        sprintf(status, "  %s %s/s %s/s  %s   %s   %s ",
+            wet, net_dl, net_up, vol, (state.group == 0 ? "En" : "Ru"), date
+        );
+
+        printf("%s\n", status);
+        XStoreName(dpy, DefaultRootWindow(dpy), status);
+
+        fflush(stdout);
+        usleep(100000);
+    }
+
+    XCloseDisplay(dpy);
+}
+
+// vim: ft=c

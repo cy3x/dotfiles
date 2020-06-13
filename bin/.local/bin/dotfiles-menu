@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cd ~/.dotfiles || exit
+
+find * -type f -printf '%T+\t%p\n' | sort -r |
+cut -f 2 | menu -i dotfiles -c 3 | xargs -r gvim

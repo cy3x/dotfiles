@@ -1,0 +1,7 @@
+#!/bin/bash
+
+rofi -show window -display-window "$(icon windows)"
+command -v rofi && exit
+
+wmctrl -l | sort -k 2 | awk '$2 > -1' | menu -i windows |
+cut -d ' ' -f 1 | xargs -r wmctrl -ia

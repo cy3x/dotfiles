@@ -1,0 +1,44 @@
+#!/bin/bash
+
+ls(){ # {{{
+    s=$(cat)
+    n=$(echo "$s" | wc -l)
+
+    echo "$s" | {
+        (( $n < 2 )) && cat ||
+        head -n 9 | nl -w ${#n} -s '. '
+    }
+
+    (( $n > 9 )) && echo "$n. ..."
+} # }}}
+news(){ # {{{
+    sqlite3 ~/.newsboat/cache.db '
+        select title from rss_item
+        where unread = 1 order by pubDate desc
+    '
+} # }}}
+network(){ # {{{
+    nmcli device "$@" | sed 1d
+} # }}}
+
+case $1 in
+    news) notify-send -i application-rss+xml Новости -- "$(news             | ls)";;
+    mail) notify-send -i emblem-mail         Почта   -- "$(frm -s new | tac | ls)";;
+    days) notify-send -i x-office-calendar   Дни     -- "$(days             | ls)";;
+
+    weather) notify-send -i ~/.cache/weather.svg Погода -- "$(weather)";;
+    moonday) notify-send -i ~/.cache/moonday.svg День   -- "$(moonday)";;
+
+     network) notify-send -i network-wired    Сеть     -- "$(network      | ls)";;
+        wifi) notify-send -i network-wireless WiFi     -- "$(network wifi | ls)";;
+    torrents) notify-send -i transmission     Загрузки -- "$(torrents     | ls)";;
+
+    systemp) notify-send -i utilities-system-monitor Датчики -- "$(systemp)";;
+    battery) notify-send -i battery                  Заряд   -- "$(battery | ls)";;
+
+    music) music-notify;;
+   #music) notify-send -i audio-x-generic Музыка "$(music | ls)";;
+
+    '') grep -o '^\s\+\w\+)' $0 | tr -d ' )' | sort;;
+     *) notify-send -i "$1" "${1^}" -- "$($* | ls)";;
+esac &

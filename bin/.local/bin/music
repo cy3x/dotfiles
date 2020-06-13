@@ -1,0 +1,179 @@
+#!/bin/bash
+
+ play_icon=${MUSIC_PLAY_ICON:-'>'}
+pause_icon=${MUSIC_PAUSE_ICON:-'||'}
+
+mocp_control(){ # {{{
+    case $1 in
+        play) mocp --play; sleep 0.2;;
+        stop) mocp --stop;;
+       pause) mocp --toggle-pause;;
+        prev) mocp --previous; sleep 0.1;;
+        next) mocp --next; sleep 0.1;;
+        seek) mocp --seek $2; sleep 0.1;;
+    esac 2>&-
+} # }}}
+mocp_status(){ # {{{
+    IFS='|' read status tt ct tl file artist album title <<< \
+    $(mocp -Q '%state|%tt|%ct|%tl|%file|%artist|%album|%song' 2>&-)
+
+    [[ $status == STOP ]] && return 1
+    [[ $status == PLAY ]] && status=play || status=pause
+} # }}}
+
+audacious_control(){ # {{{
+    case $1 in
+        play) audtool playback-play;;
+        stop) audtool playback-stop;;
+       pause) audtool playback-playpause;;
+        prev) audtool playlist-reverse;;
+        next) audtool playlist-advance;;
+        seek) audtool playback-seek-relative $2;;
+    esac
+} # }}}
+audacious_status(){ # {{{
+    IFS='|' read status tt ct tti cti file artist album title <<< $(audtool \
+        playback-status \
+        current-song-length current-song-output-length \
+        current-song-length-seconds current-song-output-length-seconds \
+        current-song-filename current-song-tuple-data artist \
+        current-song-tuple-data album current-song-tuple-data title |
+        tr \\n \|
+    )
+
+    [[ $status == stopped ]] && return 1
+    [[ $status == playing ]] && status=play || status=pause
+
+    tl=$(date -ud @$(( tti - cti )) +'%M:%S')
+} # }}}
+
+cmus_control(){ # {{{
+    case $1 in
+        play) cmus-remote --play; sleep 0.2;;
+        stop) cmus-remote --stop;;
+       pause) cmus-remote --pause;;
+        prev) cmus-remote --prev;;
+        next) cmus-remote --next;;
+        seek) cmus-remote --seek $2;;
+    esac
+} # }}}
+cmus_status(){ # {{{
+    declare -A array
+    while read k1 k2 v; do
+        [[ $k1 == set || $k1 == tag ]] &&
+        array[$k2]="$v" || array[$k1]="$k2 $v"
+    done <<< "$(cmus-remote --query)"
+
+    status=${array[status]}
+    [[ $status == stopped* ]] && return 1
+    [[ $status == playing* ]] && status=play || status=pause
+
+    file=${array[file]}
+    artist=${array[artist]}
+    album=${array[album]}
+    title=${array[title]}
+
+    tti=${array[duration]}
+    cti=${array[position]}
+
+    tt=$(date -ud @$tti +'%M:%S')
+    ct=$(date -ud @$cti +'%M:%S')
+    tl=$(date -ud @$(( tti - cti )) +'%M:%S')
+} # }}}
+
+mpd_control(){ # {{{
+    case $1 in
+        play) mpc play;;
+        stop) mpc stop;;
+       pause) mpc toggle;;
+        prev) mpc prev;;
+        next) mpc next;;
+        seek) mpc seek $2;;
+    esac >&-
+} # }}}
+mpd_status(){ # {{{
+    declare -a array
+    while read line; do
+        array+=("$line")
+    done <<< "$(mpc -f '%file%\n%artist%\n%album%\n%title%')"
+
+    read status _ time _ <<< "${array[3]}"
+    [[ $status ]] || return 1
+    [[ $status == \[playing\] ]] && status=play || status=pause
+
+    file=${array[0]}
+    artist=${array[1]}
+    album=${array[2]}
+    title=${array[3]}
+
+    tt=${time#*/}
+    tti=$(date -ud $tt +%s)
+
+    ct=${time%/*}
+    cti=$(date -ud $ct +%s)
+
+    tl=$(date -ud @$(( tti - cti )) +%H:%M)
+} # }}}
+
+dbus(){ # {{{
+    qdbus org.mpris.MediaPlayer2.$1 \
+    /org/mpris/MediaPlayer2 \
+    org.mpris.MediaPlayer2.Player.$2 $3
+} # }}}
+dbus_control(){ # {{{
+    case $2 in
+        play) dbus $1 Play; sleep 0.2;;
+        stop) dbus $1 Stop;;
+       pause) dbus $1 PlayPause;;
+        prev) dbus $1 Previous;;
+        next) dbus $1 Next;;
+        seek) dbus $1 Seek $(( $3 * 1000000 ));;
+    esac
+} # }}}
+dbus_status(){ # {{{
+    status=$(dbus $1 PlaybackStatus)
+
+    [[ $status == Stopped ]] && return 1
+    [[ $status == Playing ]] && status=play || status=pause
+
+    declare -A array
+    while read k v; do
+        array[$k]=$v
+    done <<< "$(dbus $1 Metadata)"
+
+    artist=${array[xesam:artist:]}
+    album=${array[xesam:album:]}
+    title=${array[xesam:title:]}
+
+    file=${array[xesam:url:]#file://}
+    file=$(echo -e "${file//%/\\x}")
+
+    tti=$(( ${array[mpris:length:]} / 1000000 ))
+    tt=$(date -ud @$tti +'%M:%S')
+
+    cti=$(( $(dbus $1 Position) / 1000000 ))
+    ct=$(date -ud @$cti +'%M:%S')
+
+    tl=$(date -ud @$(( tti - cti )) +'%M:%S')
+} # }}}
+
+rhythmbox_control(){ # {{{
+    dbus_control rhythmbox "$@"
+} # }}}
+rhythmbox_status(){ # {{{
+    dbus_status rhythmbox
+} # }}}
+
+export player icon file artist album title tt ct tl
+for player in mocp audacious cmus mpd rhythmbox; do
+    [[ $(pidof $player) ]] || continue
+    ${player}_control "$@" && ${player}_status || continue
+
+    [[ $title ]] || title=${file##*/}
+    [[ $status == play  ]] && icon=$play_icon
+    [[ $status == pause ]] && icon=$pause_icon
+
+    [[ $MUSIC_PLAYER ]] && printf '[%9s] ' $player
+    [[ $MUSIC_FORMAT ]] && echo $MUSIC_FORMAT | envsubst ||
+    echo "$icon $artist${artist:+ - }$title (-$tl)"
+done

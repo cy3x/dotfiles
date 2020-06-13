@@ -1,0 +1,295 @@
+#!/bin/bash
+
+declare -A base16_ashes=( # {{{
+    [background]='#1c2023' [foreground]='#c7ccd1'
+    [color0]='#1c2023'         [color8]='#747c84'
+    [color1]='#c7ae95'         [color9]='#c7ae95'
+    [color2]='#95c7ae'        [color10]='#95c7ae'
+    [color3]='#aec795'        [color11]='#aec795'
+    [color4]='#ae95c7'        [color12]='#ae95c7'
+    [color5]='#c795ae'        [color13]='#c795ae'
+    [color6]='#95aec7'        [color14]='#95aec7'
+    [color7]='#c7ccd1'        [color15]='#f3f4f5'
+) # }}}
+declare -A base16_dracula=( # {{{
+    [background]='#282936' [foreground]='#e9e9f4'
+    [color0]='#282936'         [color8]='#4d4f68'
+    [color1]='#ea51b2'         [color9]='#ea51b2'
+    [color2]='#00f769'        [color10]='#00f769'
+    [color3]='#ebff87'        [color11]='#ebff87'
+    [color4]='#62d6e8'        [color12]='#62d6e8'
+    [color5]='#b45bcf'        [color13]='#b45bcf'
+    [color6]='#a1efe4'        [color14]='#a1efe4'
+    [color7]='#e9e9f4'        [color15]='#f7f7fb'
+) # }}}
+declare -A base16_flat=( # {{{
+    [background]='#2c3e50' [foreground]='#e0e0e0'
+    [color0]='#2c3e50'         [color8]='#95a5a6'
+    [color1]='#e74c3c'         [color9]='#e74c3c'
+    [color2]='#2ecc71'        [color10]='#2ecc71'
+    [color3]='#f1c40f'        [color11]='#f1c40f'
+    [color4]='#3498db'        [color12]='#3498db'
+    [color5]='#9b59b6'        [color13]='#9b59b6'
+    [color6]='#1abc9c'        [color14]='#1abc9c'
+    [color7]='#e0e0e0'        [color15]='#ecf0f1'
+) # }}}
+declare -A base16_gruvbox_medium=( # {{{
+    [background]='#282828' [foreground]='#d5c4a1'
+    [color0]='#282828'         [color8]='#665c54'
+    [color1]='#fb4934'         [color9]='#fb4934'
+    [color2]='#b8bb26'        [color10]='#b8bb26'
+    [color3]='#fabd2f'        [color11]='#fabd2f'
+    [color4]='#83a598'        [color12]='#83a598'
+    [color5]='#d3869b'        [color13]='#d3869b'
+    [color6]='#8ec07c'        [color14]='#8ec07c'
+    [color7]='#d5c4a1'        [color15]='#fbf1c7'
+) # }}}
+declare -A base16_gruvbox_soft=( # {{{
+    [background]='#32302f' [foreground]='#d5c4a1'
+    [color0]='#32302f'         [color8]='#665c54'
+    [color1]='#fb4934'         [color9]='#fb4934'
+    [color2]='#b8bb26'        [color10]='#b8bb26'
+    [color3]='#fabd2f'        [color11]='#fabd2f'
+    [color4]='#83a598'        [color12]='#83a598'
+    [color5]='#d3869b'        [color13]='#d3869b'
+    [color6]='#8ec07c'        [color14]='#8ec07c'
+    [color7]='#d5c4a1'        [color15]='#fbf1c7'
+) # }}}
+declare -A base16_material=( # {{{
+    [background]='#263238' [foreground]='#eeffff'
+    [color0]='#263238'         [color8]='#546e7a'
+    [color1]='#f07178'         [color9]='#f07178'
+    [color2]='#c3e88d'        [color10]='#c3e88d'
+    [color3]='#ffcb6b'        [color11]='#ffcb6b'
+    [color4]='#82aaff'        [color12]='#82aaff'
+    [color5]='#c792ea'        [color13]='#c792ea'
+    [color6]='#89ddff'        [color14]='#89ddff'
+    [color7]='#eeffff'        [color15]='#eeffff' # [color15]='#ffffff'
+) # }}}
+declare -A base16_material_palenight=( # {{{
+    [background]='#292d3e' [foreground]='#959dcb'
+    [color0]='#292d3e'         [color8]='#676e95'
+    [color1]='#f07178'         [color9]='#f07178'
+    [color2]='#c3e88d'        [color10]='#c3e88d'
+    [color3]='#ffcb6b'        [color11]='#ffcb6b'
+    [color4]='#82aaff'        [color12]='#82aaff'
+    [color5]='#c792ea'        [color13]='#c792ea'
+    [color6]='#89ddff'        [color14]='#89ddff'
+    [color7]='#959dcb'        [color15]='#ffffff'
+) # }}}
+declare -A base16_nord=( # {{{
+    [background]='#2e3440' [foreground]='#e5e9f0'
+    [color0]='#2e3440'         [color8]='#4c566a'
+    [color1]='#88c0d0'         [color9]='#88c0d0'
+    [color2]='#bf616a'        [color10]='#bf616a'
+    [color3]='#5e81ac'        [color11]='#5e81ac'
+    [color4]='#ebcb8b'        [color12]='#ebcb8b'
+    [color5]='#a3be8c'        [color13]='#a3be8c'
+    [color6]='#d08770'        [color14]='#d08770'
+    [color7]='#e5e9f0'        [color15]='#8fbcbb'
+) # }}}
+declare -A base16_ocean=( # {{{
+    [background]='#2b303b' [foreground]='#c0c5ce'
+    [color0]='#2b303b'         [color8]='#65737e'
+    [color1]='#bf616a'         [color9]='#bf616a'
+    [color2]='#a3be8c'        [color10]='#a3be8c'
+    [color3]='#ebcb8b'        [color11]='#ebcb8b'
+    [color4]='#8fa1b3'        [color12]='#8fa1b3'
+    [color5]='#b48ead'        [color13]='#b48ead'
+    [color6]='#96b5b4'        [color14]='#96b5b4'
+    [color7]='#c0c5ce'        [color15]='#eff1f5'
+) # }}}
+declare -A base16_oceanicnext=( # {{{
+    [background]='#1b2b34' [foreground]='#c0c5ce'
+    [color0]='#1b2b34'         [color8]='#65737e'
+    [color1]='#ec5f67'         [color9]='#ec5f67'
+    [color2]='#99c794'        [color10]='#99c794'
+    [color3]='#fac863'        [color11]='#fac863'
+    [color4]='#6699cc'        [color12]='#6699cc'
+    [color5]='#c594c5'        [color13]='#c594c5'
+    [color6]='#5fb3b3'        [color14]='#5fb3b3'
+    [color7]='#c0c5ce'        [color15]='#d8dee9'
+) # }}}
+declare -A base16_porple=( # {{{
+    [background]='#292c36' [foreground]='#d8d8d8'
+    [color0]='#292c36'         [color8]='#65568a'
+    [color1]='#f84547'         [color9]='#f84547'
+    [color2]='#95c76f'        [color10]='#95c76f'
+    [color3]='#efa16b'        [color11]='#efa16b'
+    [color4]='#8485ce'        [color12]='#8485ce'
+    [color5]='#b74989'        [color13]='#b74989'
+    [color6]='#64878f'        [color14]='#64878f'
+    [color7]='#d8d8d8'        [color15]='#f8f8f8'
+) # }}}
+declare -A base16_tomorrow_night=( # {{{
+    [background]='#1d1f21' [foreground]='#c5c8c6'
+    [color0]='#1d1f21'         [color8]='#969896'
+    [color1]='#cc6666'         [color9]='#cc6666'
+    [color2]='#b5bd68'        [color10]='#b5bd68'
+    [color3]='#f0c674'        [color11]='#f0c674'
+    [color4]='#81a2be'        [color12]='#81a2be'
+    [color5]='#b294bb'        [color13]='#b294bb'
+    [color6]='#8abeb7'        [color14]='#8abeb7'
+    [color7]='#c5c8c6'        [color15]='#ffffff'
+) # }}}
+declare -A default=( # {{{
+    [background]='#222228' [foreground]='#d8dade'
+    [color0]='#222228'         [color8]='#4e4e56' # [color0]='#37373f'
+    [color1]='#ff5f5f'         [color9]='#ff5f5f'
+    [color2]='#87af5f'        [color10]='#87af5f'
+    [color3]='#d7af87'        [color11]='#d7af87' # [color11]='#ffd75f'
+    [color4]='#5f5fff'        [color12]='#afafd7'
+    [color5]='#d75fff'        [color13]='#d75fff'
+    [color6]='#87d7d7'        [color14]='#87d7d6'
+    [color7]='#a8aaae'        [color15]='#d8dade'
+) # }}}
+declare -A dkeg_prevail=( # {{{
+    [background]='#263139' [foreground]='#dac99d'
+    [color0]='#263139'         [color8]='#455867'
+    [color1]='#f36f62'         [color9]='#f36f62'
+    [color2]='#c5e19c'        [color10]='#c5e19c'
+    [color3]='#ccb478'        [color11]='#ccb478'
+    [color4]='#4c7e89'        [color12]='#4c7e89'
+    [color5]='#814d61'        [color13]='#814d61'
+    [color6]='#79a69d'        [color14]='#79a69d'
+    [color7]='#c4c4b5'        [color15]='#dbdbd1'
+) # }}}
+declare -A hybrid_material=( # {{{
+    [background]='#263238' [foreground]='#ffffff'
+    [color0]='#263238'         [color8]='#707880'
+    [color1]='#cc6666'         [color9]='#cc6666'
+    [color2]='#f0c674'        [color10]='#f0c674'
+    [color3]='#b5bd68'        [color11]='#b5bd68'
+    [color4]='#8abeb7'        [color12]='#8abeb7'
+    [color5]='#81a2be'        [color13]='#81a2be'
+    [color6]='#b294bb'        [color14]='#b294bb'
+    [color7]='#ffffff'        [color15]='#ffffff'
+) # }}}
+declare -A monokai=( # {{{
+    [background]='#272822' [foreground]='#f8f8f2'
+    [color0]='#272822'         [color8]='#75715e'
+    [color1]='#f92672'         [color9]='#f92672'
+    [color2]='#a6e22e'        [color10]='#a6e22e'
+    [color3]='#f4bf75'        [color11]='#f4bf75'
+    [color4]='#66d9ef'        [color12]='#66d9ef'
+    [color5]='#ae81ff'        [color13]='#ae81ff'
+    [color6]='#a1efe4'        [color14]='#a1efe4'
+    [color7]='#f8f8f2'        [color15]='#f9f8f5'
+) # }}}
+declare -A solarized=( # {{{
+    [background]='#073642' [foreground]='#fdf6e3'
+    [color0]='#073642'         [color8]='#6c7c80'
+    [color1]='#dc322f'         [color9]='#dc322f'
+    [color2]='#859900'        [color10]='#859900'
+    [color3]='#b58900'        [color11]='#b58900'
+    [color4]='#268bd2'        [color12]='#268bd2'
+    [color5]='#d33682'        [color13]='#d33682'
+    [color6]='#2aa198'        [color14]='#2aa198'
+    [color7]='#eee8d5'        [color15]='#eee8d5'
+) # }}}
+declare -A zenburn3=( # {{{
+    [background]='#3f3f3f' [foreground]='#ffffff'
+    [color0]='#3f3f3f'         [color8]='#828282'
+    [color1]='#dca5a5'         [color9]='#dca5a5'
+    [color2]='#c0e380'        [color10]='#c0e380'
+    [color3]='#e4e49a'        [color11]='#e4e49a'
+    [color4]='#7d9ec0'        [color12]='#7d9ec0'
+    [color5]='#ffc66d'        [color13]='#ffc66d'
+    [color6]='#8acccf'        [color14]='#8acccf'
+    [color7]='#ffffff'        [color15]='#ffffff'
+) # }}}
+
+[[ -f ~/.config/wall/colors.sh ]] &&
+source ~/.config/wall/colors.sh
+
+return 2>&-
+
+################################################################################
+
+declare -n colors=default
+source ~/.config/colors/colors.sh 2>&- &&
+for i in {back,fore}ground color{0..15}; do colors[$i]=${!i}; done
+
+case $1 in
+    -b|--background)
+        cp "$2" ~/.config/wallpaper.jpg 2>&-
+        hsetroot -solid ${colors[background]} -cover $_ > /dev/null 2>&1
+
+        qdbus --system org.freedesktop.Accounts /org/freedesktop/Accounts/User$UID \
+        org.freedesktop.DisplayManager.AccountsService.BackgroundFile $_ 2>&-
+
+        exit
+    ;;
+
+    -c|--color)
+        source $0; reload=1; declare -n colors=$2 2>&-
+        list(){ source $0; local | grep -io "^\w*$1\w*"; }
+        [[ ! $2 || ! ${colors[@]} ]] && { list "$2"; exit; }
+    ;;
+
+    -r|--reload) reload=1;;
+esac
+
+mkdir -p ~/.config/colors; cd $_
+
+################################################################################
+
+print(){ # {{{
+    printf "${2:-%s}\n" "$(for i in ${!colors[@]}; do printf "$1\n" $i "${colors[$i]}"; done)"
+} # }}}
+rgba(){ # {{{
+    printf 'rgba(%d, %d, %d, 0.%d)' 0x${1:1:2} 0x${1:3:2} 0x${1:5:2} $(( 0x${1:7:2} * 1000 / 255 ))
+} # }}}
+
+[[ ${colors[foreground]} < ${colors[color7]}  ]] && colors[foreground]=${colors[color7]}
+[[ ${colors[foreground]} < ${colors[color15]} ]] && colors[foreground]=${colors[color15]}
+
+colors[background_rgba]=${colors[background]}e0
+colors[background_argb]=${colors[background]/\#/\#e0}
+
+> colors.xres print '*%s: %s'
+> colors.lua  print '%s = "%s";'
+> colors.sh   print 'export %s="%s"'
+> colors.h    print 'char %s[] = "%s";'
+> colors.ini  print '%s = %s' '[colors]\n%s'
+
+colors[background-rgba]=$(rgba ${colors[background_rgba]})
+unset colors[background_rgba] colors[background_argb]
+
+> colors.gtk  print '@define-color %s %s;'
+> colors.rasi print '  %s: %s;' '* {\n%s\n}'
+> colors.css  print '  --%s: %s;' ':root {\n%s\n}'
+
+> colors-xterm printf '\e]%s;%s\a' \
+10 ${colors[foreground]}      11 ${colors[background]} \
+12 ${colors[foreground]} '4;256' ${colors[foreground]} \
+$(for i in {0..15}; do echo "4;$i" ${colors[color$i]}; done)
+
+colors[color7]=${colors[foreground]}
+> colors-linux printf '\e]P%x%s\a' $(for i in {0..7}; do echo $i ${colors[color$i]:1}; done)
+
+################################################################################
+
+printf '\e[1;30m'
+trap 'printf "\e[0m"; colors' EXIT
+
+xrdb -merge colors.xres
+$0 -b ../wallpaper.jpg &
+
+source colors.sh
+find ~/.config ~/.local -name \*.wall |
+while read f; do envsubst < $f > ${f%.wall}; done
+
+[[ $reload ]] || exit
+
+i3 restart
+killall dunst
+
+killall -HUP  dwm awesome xfwm4
+killall -USR1 openbox; sleep 0.2
+killall -USR1 sxhkd compton picom polybar xfce4-panel
+
+for i in /dev/pts/[0-9]; do cat colors-xterm > $i; done
+for i in /dev/tty[0-9];  do cat colors-linux > $i; done 2>&-
+
+$0 -b ../wallpaper.jpg &

@@ -1,0 +1,65 @@
+#!/bin/bash
+
+title=$1
+term(){
+    xterm -e $SHELL -ic "echo -e \"\e]0;${title^}\a\"; $@" ||
+    xterm -x $SHELL -ic "echo -e \"\e]0;${title^}\a\"; $@"
+}
+
+case $1 in
+          apps) apps-menu;;
+          menu) start-menu;;
+       windows) windows-menu;;
+
+      terminal) xterm;;
+        editor) gvim;;
+         files) term ranger;;
+
+         bloge) blo-menu;;
+          mail) term mutt;;
+          news) term newsboat;;
+      torrents) term transmission-remote-cli;;
+       browser) chromium --new-window lexa.by;;
+
+          kino) mpv-menu;;
+         music) term mocp;;
+         audio) audio-menu;;
+         mixer) pavucontrol;;
+
+           man) man-menu;;
+          pass) pass-menu;;
+          wiki) wiki-menu;;
+          days) notify days;;
+       weather) notify weather;;
+       moonday) notify moonday;;
+      calendar) term calcurse;;
+
+         theme) wall-menu;;
+         emoji) emoji-menu;;
+       symbols) gucharmap;;
+      dotfiles) dotfiles-menu;;
+     wallpaper) wallpaper-menu;;
+     nerdfonts) nerdfonts-menu;;
+         icons) gtk3-icon-browser;;
+
+    screenshot) screenshot;;
+        system) system-menu;;
+       systemp) notify systemp;;
+       battery) notify battery;;
+      redshift) kill $(pidof redshift) || redshift;;
+        picker) gpick -spo | tr A-Z a-z | tr -d \\n | xsel -b;;
+     drop-down) xfce4-terminal --drop-down --role pop-up --title Dropdown;;
+
+       files-alt) nemo;;
+     browser-alt) luakit;;
+    terminal-alt) term tm;;
+       music-alt) audacious;;
+        apps-alt) xfce4-appfinder;;
+    torrents-alt) transmission-gtk;;
+      editor-alt) term 'vim --servername vim';;
+           *-alt) $0 ${1%-alt};;
+
+    '') grep -o '^\s\+\w\+)' $0 | tr -d ' )' | sort;;
+    -*) shift; title=$1 term "$*";;
+     *) term "$*";;
+esac &

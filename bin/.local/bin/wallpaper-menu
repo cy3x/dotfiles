@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sxiv -to ~/Pictures/Wallpapers | xargs -r wall -b

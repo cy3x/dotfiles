@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "${1/~/\~} |"
+du -Hh "$1" | cut -f 1
+echo \|
+identify -format '%wx%h' "$1"[0]

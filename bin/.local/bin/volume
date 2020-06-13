@@ -1,0 +1,24 @@
+#!/bin/bash
+
+value(){ # {{{
+    grep -om 1 '[0-9]*%' | tee ~/.cache/volume
+} # }}}
+
+vol=$1
+get=$(amixer get Master | value)
+
+[[ ! $vol ]] && echo $get && exit
+[[ $vol == +* ]] && vol=${vol:1}+
+[[ $vol == -* ]] && vol=${vol:1}-
+
+set=$(amixer set Master $vol unmute | value)
+[[ $get != $set ]] && aplay ~/.local/share/sounds/bubble.wav 2>&- &
+
+ico=high
+vol=${set:0:-1}
+
+(( vol < 65 )) && ico=medium
+(( vol < 35 )) && ico=low
+(( vol <  1 )) && ico=muted
+
+notify-send -a volume -i audio-volume-$ico-symbolic -- "Громкость $set"

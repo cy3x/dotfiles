@@ -1,0 +1,4 @@
+#!/bin/bash
+
+{ blo -l; echo; } | tac | menu -i bloge -c 2 |
+cut -d . -f 1 | xargs -r0 start blo

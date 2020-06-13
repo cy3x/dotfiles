@@ -1,0 +1,5 @@
+#!/bin/bash
+# Take a screenshot
+
+check scrot || exit
+scrot -z "$HOME/pix/shots/$(date +%F-%T).png"

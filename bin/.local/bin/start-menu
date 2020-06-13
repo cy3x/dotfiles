@@ -1,0 +1,4 @@
+#!/bin/bash
+
+start | while read i; do icon $i ${i^}; done |
+menu -i os -c 10 -l 6 | awk '{ print tolower($NF) }' | xargs -r start

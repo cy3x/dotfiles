@@ -1,0 +1,24 @@
+#!/bin/bash
+
+inline(){ # {{{
+    paste - - | sed '
+        s/"//g
+        s/\s\+index: /\t/
+        s/\s\+[a-z.]* = /\t/
+    '
+} # }}}
+
+[[ ! $1 ]] && pacmd list-sinks |
+grep 'index\|device\.description' |
+inline && exit
+
+pacmd set-default-sink $1
+pacmd list-sink-inputs |
+grep 'index\|application\.name' |
+inline | while read id app; do
+    echo "[$id] $app";
+    pacmd move-sink-input $id $1
+done
+
+volume +0
+pkill -USR1 polybar

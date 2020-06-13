@@ -1,0 +1,9 @@
+#!/bin/bash
+
+at=($(< ~/.vim/vimpid) gvim)
+ls=$(vim --serverlist | grep -ic $at)
+
+[[ $1    == -f ]] && shift
+[[ $#$ls == 00 ]] || rt=-tab
+
+vim -g --servername $at ${@:+--remote$rt-silent "$@"}

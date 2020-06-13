@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd ~/Wiki
+
+find * -name \*.wiki -printf '%T+\t%p\n' | sort -r | cut -f 2 |
+sed 's/\.wiki//' | while read i; do icon document $i; done |
+menu -i wiki -c 4 -l 4 | cut -d ' ' -f 2- | xargs -rI % gvim %.wiki

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+wall -c | menu -i theme -c 4 -l 6 | xargs -r wall -c

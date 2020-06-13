@@ -1,0 +1,14 @@
+#!/bin/bash
+
+ssh=2221
+
+vboxmanage list runningvms | while IFS=\" read _ name id; do
+    echo "22 -> $(( ++ssh )): $name"
+
+    vboxmanage showvminfo --machinereadable $id |
+    awk -F '[",]' '/Forwarding/ { print $2 }' | while read rule; do
+        vboxmanage controlvm $id natpf1 delete "$rule"
+    done
+
+    vboxmanage controlvm $id natpf1 "SSH,tcp,,$ssh,,22"
+done

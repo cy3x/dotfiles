@@ -1,0 +1,4 @@
+#!/bin/bash
+
+transmission-remote -l | sed '1d; $d; s/\s\+\s/|/g' |
+cut -d \| -f 3,9,10 | column -ts \|

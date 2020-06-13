@@ -1,0 +1,4 @@
+#!/bin/bash
+
+audio | tr \\t \| | while read i; do icon audio-"$i" "$i"; done |
+tr \| \\t | menu -i audio -l 4 | cut -f 2 | xargs -r audio

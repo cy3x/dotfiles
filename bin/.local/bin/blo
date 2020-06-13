@@ -1,0 +1,29 @@
+#!/bin/bash
+
+cd ~/Lexa.by/bloge
+
+post=$(mktemp -u).md
+news=$(date +%Y)/news.txt
+
+[[ $1 == -l || $1 == --list ]] &&
+awk -F / '{ print NR ". #" $2 " " substr($3, 1, 70) }' $news &&
+exit
+
+[[ $1 ]] &&
+sed 's/\\n/\n/g; '$1'q; d' $news |
+pandoc -f html -o $post ||
+date +'%F %H:%M//' > $post
+
+cp $post $post.orig
+${EDITOR:-vim} $post
+diff $post* && exit
+
+meta=$(sed 1q $post)
+body=$(sed 1d $post | pandoc -t html)
+body=$(sed 'y/“‘’”/«„“»/' <<< "$body")
+body=${body//$'\n'/\\\\n}
+
+sed -i "${1:-$}a\\$meta$body" $news
+[[ $1 ]] && sed -i $1d $news
+
+./build.php

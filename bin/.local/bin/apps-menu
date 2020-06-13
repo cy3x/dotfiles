@@ -1,0 +1,9 @@
+#!/bin/bash
+
+rofi -show drun -display-drun "$(icon apps)" -columns 3 -terminal start
+command -v rofi && exit
+
+j4-dmenu-desktop --display-binary --dmenu 'menu -i apps' --term start
+command -v j4-dmenu-desktop && exit
+
+dmenu_path | menu -i apps | xargs -r start

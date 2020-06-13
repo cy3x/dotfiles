@@ -1,0 +1,19 @@
+#!/bin/bash
+
+system(){
+    case $1 in
+      reload) wall -r;;
+     restart) ~/.xprofile;;
+        lock) dm-tool lock;;
+       sleep) systemctl suspend;;
+        quit) killall $DESKTOP_SESSION Xorg;;
+      reboot) reboot;;
+    poweroff) poweroff;;
+          '') grep -o '^\s\+\w\+)' $0 | tr -d ' )';;
+    esac
+}
+
+s=$(system | while read i; do icon system-$i ${i^}; done |
+menu -i system -c 10 -l 2 | awk '{ print tolower($NF) }')
+
+[[ $s ]] && system $s
