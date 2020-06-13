@@ -1,4 +1,4 @@
-cy3x's dotfiles
+dotfiles
 --------------------
 
 Uses GNU Stow – https://www.gnu.org/software/stow/
@@ -9,3 +9,8 @@ cd ~
 git clone https://github.com/cy3x/dotfiles
 cd dotfiles
 stow polybar (or i3, rofi, dmenu, etc.)
+```
+
+screenshot
+--------------------
+Soon
