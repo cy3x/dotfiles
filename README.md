@@ -13,4 +13,4 @@ stow polybar (or i3, rofi, dmenu, etc.)
 
 Screenshot
 --------------------
-Soon
+Soon...
