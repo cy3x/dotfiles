@@ -9,7 +9,6 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export LESSHISTFILE="-"
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export PASSWORD_STORE_DIR="$XDG_DATA_HOME/password-store"
-export GIT_DIR="$XDG_CONFIG_HOME/git"
 
 export LESS_TERMCAP_mb=$'\E[01;31m'
 export LESS_TERMCAP_md=$'\E[01;31m'
