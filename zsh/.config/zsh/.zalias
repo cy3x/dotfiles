@@ -3,6 +3,12 @@ alias l="ls -la"
 alias s="cd .."
 alias mkd="mkdir -p"
 alias wget="wget --no-hsts"
+alias vi="vim"
+
+alias status="git status"
+alias add="git add"
+alias commit="git commit -m"
+alias push="git push origin master"
 
 alias sc="cd ~/.local/bin"
 alias dl="cd ~/dl"
