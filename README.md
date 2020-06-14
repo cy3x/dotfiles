@@ -7,7 +7,7 @@ Setup:
 ------
 
 - [sxiv](https://github.com/muennich/sxiv) - image viewer
-- terminus - font
+- [terminus](http://terminus-font.sourceforge.net) - font
 - deep-space - colorscheme
 - lf - file manager
 
