@@ -3,6 +3,14 @@ Dotfiles
 
 Uses GNU Stow – https://www.gnu.org/software/stow/
 
+Setup:
+------
+
+- sxiv - image viewer
+- terminus - font
+- deep-space - colorscheme
+- lf - file manager
+
 Usage:
 ------
 
